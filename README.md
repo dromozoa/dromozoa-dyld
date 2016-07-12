@@ -4,7 +4,11 @@ Dynamic linker utility.
 
 ## libpthread workaround
 
-I want to solve the problem [Question about BZ#10652: Dynamic loading a library that is linked with pthread crashes app compiled without pthread in getaddrinfo](https://sourceware.org/ml/libc-alpha/2012-10/msg00224.html).
+I want to solve the problem [Question about BZ#10652: Dynamic loading a library that is linked with pthread crashes app compiled without pthread in getaddrinfo](https://sourceware.org/ml/libc-alpha/2012-10/msg00224.html). There are workarounds:
+
+1. rebuild lua with pthread.
+2. use environment variable `LD_PRELOAD`.
+3. use `dyld.dlopen` from lua scripts as below:
 
 ```
 local dyld = require "dromozoa.dyld"
