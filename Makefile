@@ -20,7 +20,11 @@ CXXFLAGS = -Wall -W $(CFLAGS)
 LDFLAGS = -L$(LUA_LIBDIR) $(LIBFLAG)
 LDLIBS = -ldl
 
-OBJS = module.o
+OBJS = \
+	dlfcn.o \
+	handle.o \
+	module.o \
+	symbol.o
 TARGET = dyld.so
 
 all: $(TARGET)

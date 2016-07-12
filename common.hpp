@@ -15,22 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with dromozoa-dyld.  If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef DROMOZOA_COMMON_HPP
+#define DROMOZOA_COMMON_HPP
+
 #include <dromozoa/bind.hpp>
 
 namespace dromozoa {
-  void initialize_handle(lua_State* L);
-  void initialize_symbol(lua_State* L);
-  void initialize_dlfcn(lua_State* L);
-
-  void initialize(lua_State* L) {
-    initialize_handle(L);
-    initialize_symbol(L);
-    initialize_dlfcn(L);
-  }
+  void new_handle(lua_State* L, void* ptr);
+  void new_symbol(lua_State* L, void* ptr);
 }
 
-extern "C" int luaopen_dromozoa_dyld(lua_State* L) {
-  lua_newtable(L);
-  dromozoa::initialize(L);
-  return 1;
-}
+#endif
