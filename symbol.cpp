@@ -40,7 +40,7 @@ namespace dromozoa {
     }
 
     void impl_is_null(lua_State* L) {
-      luaX_push<bool>(L, !check_symbol(L, 1)->get());
+      luaX_push(L, check_symbol(L, 1)->get() == 0);
     }
   }
 
