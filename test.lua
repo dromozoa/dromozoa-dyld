@@ -23,9 +23,12 @@ assert(dyld.RTLD_NOW)
 assert(dyld.RTLD_GLOBAL)
 assert(dyld.RTLD_LOCAL)
 
-print(dyld.dlopen("no such file.so", uint32.bor(dyld.RTLD_LAZY, dyld.RTLD_LOCAL)))
-
-print(dyld.RTLD_DEFAULT:dlsym("pthread_mutex_lock"))
-
--- local f = dyld.handle.dlsym(dyld.RTLD_DEFAULT, "pthread_mutex_lock")
--- print(f, f:is_null())
+local symbol, message = dyld.RTLD_DEFAULT:dlsym("pthread_create")
+if symbol and not symbol:is_null() then
+  print("dlsym(pthread_create)", symbol:get())
+else
+  local handle = assert(dyld.dlopen("libpthread.so.0", uint32.bor(dyld.RTLD_LAZY, dyld.RTLD_GLOBAL)))
+  print("dlopen(libpthread.so.0)", handle:get())
+  local symbol = assert(dyld.RTLD_DEFAULT:dlsym("pthread_create"))
+  print("dlsym(pthread_create)", symbol:get())
+end
