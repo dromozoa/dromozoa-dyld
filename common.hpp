@@ -21,7 +21,6 @@
 #include <dromozoa/bind.hpp>
 
 namespace dromozoa {
-  void new_handle(lua_State* L, void* ptr);
   void new_symbol(lua_State* L, void* ptr);
 }
 

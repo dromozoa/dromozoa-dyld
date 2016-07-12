@@ -32,3 +32,12 @@ else
   local symbol = assert(dyld.RTLD_DEFAULT:dlsym("pthread_create"))
   print("dlsym(pthread_create)", symbol:get())
 end
+
+local symbol, message = assert(dyld.RTLD_DEFAULT:dlsym("puts"))
+assert(symbol:is_null() == false)
+
+assert(dyld.RTLD_DEFAULT:is_default() == true)
+assert(dyld.RTLD_DEFAULT:is_next() == false)
+
+assert(dyld.RTLD_NEXT:is_default() == false)
+assert(dyld.RTLD_NEXT:is_next() == true)

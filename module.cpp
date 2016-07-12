@@ -15,17 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with dromozoa-dyld.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <dromozoa/bind.hpp>
+#include "common.hpp"
 
 namespace dromozoa {
   void initialize_handle(lua_State* L);
   void initialize_symbol(lua_State* L);
-  void initialize_dlfcn(lua_State* L);
 
   void initialize(lua_State* L) {
     initialize_handle(L);
     initialize_symbol(L);
-    initialize_dlfcn(L);
   }
 }
 

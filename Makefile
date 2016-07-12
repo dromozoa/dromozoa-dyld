@@ -21,7 +21,6 @@ LDFLAGS = -L$(LUA_LIBDIR) $(LIBFLAG)
 LDLIBS = -ldl
 
 OBJS = \
-	dlfcn.o \
 	handle.o \
 	module.o \
 	symbol.o
