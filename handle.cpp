@@ -43,7 +43,7 @@ namespace dromozoa {
     }
 
     void impl_dlclose(lua_State* L) {
-      if (dlclose(check_handle(L, 1)) == 0) {
+      if (dlclose(check_handle(L, 1)->get()) == 0) {
         luaX_push_success(L);
       } else {
         luaX_push(L, luaX_nil);
