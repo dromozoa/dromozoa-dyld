@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2016,2017 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-bind.
 //
@@ -210,6 +210,83 @@ namespace dromozoa {
     void impl_unexpected(lua_State*) {
       DROMOZOA_UNEXPECTED("error");
     }
+
+    typedef void (*api_callback_i_type)(int v, void* userdata);
+    typedef void (*api_callback_s_type)(const std::string& v, void* userdata);
+    typedef void (*api_destructor_type)(void* userdata);
+    api_callback_i_type api_callback_i = 0;
+    api_callback_s_type api_callback_s = 0;
+    api_destructor_type api_destructor = 0;
+    void* api_userdata = 0;
+
+    void api_set_callback(api_callback_i_type callback_i, api_callback_s_type callback_s, api_destructor_type destructor, void* userdata) {
+      api_callback_i = callback_i;
+      api_callback_s = callback_s;
+      api_destructor = destructor;
+      api_userdata = userdata;
+    }
+
+    void api_run_callback_i(int v) {
+      if (api_callback_i) {
+        api_callback_i(v, api_userdata);
+      }
+    }
+
+    void api_run_callback_s(const std::string& v) {
+      if (api_callback_s) {
+        api_callback_s(v, api_userdata);
+      }
+    }
+
+    void api_run_destructor() {
+      if (api_destructor) {
+        api_destructor(api_userdata);
+        api_set_callback(0, 0, 0, 0);
+      }
+    }
+
+    void callback_i(int v, void* userdata) {
+      luaX_reference<2>* ref = static_cast<luaX_reference<2>*>(userdata);
+      lua_State* L = ref->state();
+      int top = lua_gettop(L);
+      ref->get_field();
+      luaX_push(L, v);
+      lua_pcall(L, 1, 1, 0);
+      lua_settop(L, top);
+    }
+
+    void callback_s(const std::string& v, void* userdata) {
+      luaX_reference<2>* ref = static_cast<luaX_reference<2>*>(userdata);
+      lua_State* L = ref->state();
+      int top = lua_gettop(L);
+      ref->get_field(1);
+      luaX_push(L, v);
+      lua_pcall(L, 1, 1, 0);
+      lua_settop(L, top);
+    }
+
+    void destructor(void* userdata) {
+      delete static_cast<luaX_reference<2>*>(userdata);
+    }
+
+    void impl_set_callback(lua_State* L) {
+      luaX_reference<2>* ref = new luaX_reference<2>(L, 1, 2);
+      api_set_callback(&callback_i, &callback_s, &destructor, ref);
+    }
+
+    void impl_run_callback_i(lua_State* L) {
+      api_run_callback_i(luaX_check_integer<int>(L, 1));
+    }
+
+    void impl_run_callback_s(lua_State* L) {
+      size_t size = 0;
+      const char* data = luaL_checklstring(L, 1, &size);
+      api_run_callback_s(std::string(data, size));
+    }
+
+    void impl_run_destructor(lua_State*) {
+      api_run_destructor();
+    }
   }
 
   void initialize(lua_State* L) {
@@ -269,6 +346,13 @@ namespace dromozoa {
     luaX_set_field(L, -1, "chain_gc_count", impl_chain_gc_count);
 
     luaX_set_field(L, -1, "unexpected", impl_unexpected);
+
+    luaX_set_field(L, -1, "set_callback", impl_set_callback);
+    luaX_set_field(L, -1, "run_callback_i", impl_run_callback_i);
+    luaX_set_field(L, -1, "run_callback_s", impl_run_callback_s);
+    luaX_set_field(L, -1, "run_destructor", impl_run_destructor);
+
+    luaX_set_field(L, -1, "sizeof_lua_integer", sizeof(lua_Integer));
   }
 }
 
