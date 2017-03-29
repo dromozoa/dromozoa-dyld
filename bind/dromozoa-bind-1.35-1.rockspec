@@ -1,13 +1,13 @@
-package = "dromozoa-dyld"
-version = "1.5-1"
+package = "dromozoa-bind"
+version = "1.35-1"
 source = {
-  url = "https://github.com/dromozoa/dromozoa-dyld/archive/v1.5.tar.gz";
-  file = "dromozoa-dyld-1.5.tar.gz";
+  url = "https://github.com/dromozoa/dromozoa-bind/archive/v1.35.tar.gz";
+  file = "dromozoa-bind-1.35.tar.gz";
 }
 description = {
-  summary = "Dynamic linker utility";
+  summary = "Helper library for creating bindings between C++ and Lua";
   license = "GPL-3";
-  homepage = "https://github.com/dromozoa/dromozoa-dyld/";
+  homepage = "https://github.com/dromozoa/dromozoa-bind/";
   maintainer = "Tomoyuki Fujimori <moyu@dromozoa.com>";
 }
 build = {
