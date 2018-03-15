@@ -28,9 +28,9 @@ namespace dromozoa {
       }
 
     private:
+      void* ptr_;
       symbol(const symbol&);
       symbol& operator=(const symbol&);
-      void* ptr_;
     };
 
     symbol* check_symbol(lua_State* L, int arg) {
@@ -39,10 +39,6 @@ namespace dromozoa {
 
     void impl_get(lua_State* L) {
       lua_pushlightuserdata(L, check_symbol(L, 1)->get());
-    }
-
-    void impl_is_null(lua_State* L) {
-      luaX_push(L, check_symbol(L, 1)->get() == 0);
     }
   }
 
@@ -60,7 +56,6 @@ namespace dromozoa {
       lua_pop(L, 1);
 
       luaX_set_field(L, -1, "get", impl_get);
-      luaX_set_field(L, -1, "is_null", impl_is_null);
     }
     luaX_set_field(L, -2, "symbol");
   }

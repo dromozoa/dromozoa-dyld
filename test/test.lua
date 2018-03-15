@@ -17,11 +17,6 @@
 
 local dyld = require "dromozoa.dyld"
 
-assert(dyld.RTLD_LAZY)
-assert(dyld.RTLD_NOW)
-assert(dyld.RTLD_GLOBAL)
-assert(dyld.RTLD_LOCAL)
-
 local names = {
   "RTLD_LAZY";
   "RTLD_NOW";
@@ -36,11 +31,8 @@ for i = 1, #names do
 end
 
 local symbol, message = dyld.RTLD_DEFAULT:dlsym("pthread_create")
-if symbol then
-  print("dlsym(pthread_create)", symbol:get(), symbol:is_null())
-end
-
-if not symbol or symbol:is_null() then
+if not symbol then
+  print(message)
   local handle = assert(dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
   print("dlopen(libpthread.so.0)", handle:get())
   local symbol = assert(dyld.RTLD_DEFAULT:dlsym("pthread_create"))
@@ -48,10 +40,6 @@ if not symbol or symbol:is_null() then
 end
 
 local symbol, message = assert(dyld.RTLD_DEFAULT:dlsym("puts"))
-assert(symbol:is_null() == false)
+print(symbol:get())
 
-assert(dyld.RTLD_DEFAULT:is_default() == true)
-assert(dyld.RTLD_DEFAULT:is_next() == false)
-
-assert(dyld.RTLD_NEXT:is_default() == false)
-assert(dyld.RTLD_NEXT:is_next() == true)
+local handle = assert(dyld.dlopen("libz.1.dylib", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
