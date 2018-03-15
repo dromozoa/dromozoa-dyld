@@ -37,12 +37,10 @@ end
 
 local symbol, message = dyld.RTLD_DEFAULT:dlsym("pthread_create")
 if symbol then
-  print("dlsym(pthread_create)", symbol:get())
+  print("dlsym(pthread_create)", symbol:get(), symbol:is_null())
 end
 
-if symbol and not symbol:is_null() then
-  print("dlsym(pthread_create)", symbol:get())
-else
+if not symbol or symbol:is_null() then
   local handle = assert(dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
   print("dlopen(libpthread.so.0)", handle:get())
   local symbol = assert(dyld.RTLD_DEFAULT:dlsym("pthread_create"))
