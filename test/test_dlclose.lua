@@ -1,4 +1,4 @@
--- Copyright (C) 2016 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2016,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 --
 -- This file is part of dromozoa-dyld.
 --
@@ -15,12 +15,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with dromozoa-dyld.  If not, see <http://www.gnu.org/licenses/>.
 
-local uint32 = require "dromozoa.commons.uint32"
 local dyld = require "dromozoa.dyld"
 
-local handle, message = dyld.dlopen("libpthread.so.0", uint32.bor(dyld.RTLD_LAZY, dyld.RTLD_LOCAL))
+local handle, message = dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_LOCAL)
 if not handle then
-  handle, message = dyld.dlopen("libpthread.dylib", uint32.bor(dyld.RTLD_LAZY, dyld.RTLD_LOCAL))
+  handle, message = dyld.dlopen("libpthread.dylib", dyld.RTLD_LAZY + dyld.RTLD_LOCAL)
 end
 print(handle, message)
 assert(handle:dlclose())
