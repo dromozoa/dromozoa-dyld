@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2016,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-dyld.
 //
@@ -93,6 +93,11 @@ namespace dromozoa {
   void initialize_handle(lua_State* L) {
     lua_newtable(L);
     {
+      luaL_newmetatable(L, "dromozoa.dyld.handle_ref");
+      lua_pushvalue(L, -2);
+      luaX_set_field(L, -2, "__index");
+      lua_pop(L, 1);
+
       luaL_newmetatable(L, "dromozoa.dyld.handle");
       lua_pushvalue(L, -2);
       luaX_set_field(L, -2, "__index");
