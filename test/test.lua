@@ -41,5 +41,3 @@ end
 
 local symbol, message = assert(dyld.RTLD_DEFAULT:dlsym("puts"))
 print(symbol:get())
-
-local handle = assert(dyld.dlopen("libz.1.dylib", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
