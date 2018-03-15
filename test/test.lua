@@ -1,4 +1,4 @@
--- Copyright (C) 2016 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2016,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 --
 -- This file is part of dromozoa-dyld.
 --
@@ -23,7 +23,24 @@ assert(dyld.RTLD_NOW)
 assert(dyld.RTLD_GLOBAL)
 assert(dyld.RTLD_LOCAL)
 
+local names = {
+  "RTLD_LAZY";
+  "RTLD_NOW";
+  "RTLD_GLOBAL";
+  "RTLD_LOCAL";
+}
+for i = 1, #names do
+  local name = names[i]
+  local value = assert(dyld[name])
+  assert(type(value) == "number")
+  print(name, dyld[name])
+end
+
 local symbol, message = dyld.RTLD_DEFAULT:dlsym("pthread_create")
+if symbol then
+  print("dlsym(pthread_create)", symbol:get())
+end
+
 if symbol and not symbol:is_null() then
   print("dlsym(pthread_create)", symbol:get())
 else

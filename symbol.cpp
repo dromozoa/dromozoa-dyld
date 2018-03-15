@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2016,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-dyld.
 //
@@ -28,6 +28,8 @@ namespace dromozoa {
       }
 
     private:
+      symbol(const symbol&);
+      symbol& operator=(const symbol&);
       void* ptr_;
     };
 
