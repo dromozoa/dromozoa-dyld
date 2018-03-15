@@ -25,13 +25,34 @@ namespace dromozoa {
     public:
       explicit handle(void* ptr) : ptr_(ptr) {}
 
+      ~handle() {
+        if (ptr_) {
+          if (dlclose() != 0) {
+            DROMOZOA_UNEXPECTED(dlerror());
+          }
+        }
+      }
+
+      int dlclose() {
+        void* ptr = ptr_;
+        ptr_ = 0;
+        return ::dlclose(ptr);
+      }
+
       void* get() const {
         return ptr_;
       }
 
     private:
       void* ptr_;
+      handle(const handle&);
+      handle& operator=(const handle&);
     };
+
+    void new_handle_ref(lua_State* L, void* ptr) {
+      luaX_new<handle>(L, ptr);
+      luaX_set_metatable(L, "dromozoa.dyld.handle_ref");
+    }
 
     void new_handle(lua_State* L, void* ptr) {
       luaX_new<handle>(L, ptr);
@@ -39,29 +60,31 @@ namespace dromozoa {
     }
 
     handle* check_handle(lua_State* L, int arg) {
-      return luaX_check_udata<handle>(L, arg, "dromozoa.dyld.handle");
+      return luaX_check_udata<handle>(L, arg, "dromozoa.dyld.handle_ref", "dromozoa.dyld.handle");
+    }
+
+    void impl_gc(lua_State* L) {
+      check_handle(L, 1)->~handle();
     }
 
     void impl_dlclose(lua_State* L) {
-      if (dlclose(check_handle(L, 1)->get()) == 0) {
+      if (check_handle(L, 1)->dlclose() == 0) {
         luaX_push_success(L);
       } else {
-        luaX_push(L, luaX_nil);
-        luaX_push(L, dlerror());
+        luaX_push(L, luaX_nil, dlerror());
       }
     }
 
     void impl_dlsym(lua_State* L) {
       const char* name = luaL_checkstring(L, 2);
-      dlerror(); // clear error
+      // clear error
+      dlerror();
       if (void* result = ::dlsym(check_handle(L, 1)->get(), name)) {
         new_symbol(L, result);
       } else {
+        luaX_push(L, luaX_nil);
         if (const char* message = dlerror()) {
-          luaX_push(L, luaX_nil);
           luaX_push(L, message);
-        } else {
-          new_symbol(L, 0);
         }
       }
     }
@@ -70,22 +93,13 @@ namespace dromozoa {
       lua_pushlightuserdata(L, check_handle(L, 1)->get());
     }
 
-    void impl_is_default(lua_State* L) {
-      luaX_push(L, check_handle(L, 1)->get() == RTLD_DEFAULT);
-    }
-
-    void impl_is_next(lua_State* L) {
-      luaX_push(L, check_handle(L, 1)->get() == RTLD_NEXT);
-    }
-
     void impl_dlopen(lua_State* L) {
       const char* file = lua_tostring(L, 1);
       int mode = luaX_check_integer<int>(L, 2);
       if (void* result = dlopen(file, mode)) {
         new_handle(L, result);
       } else {
-        luaX_push(L, luaX_nil);
-        luaX_push(L, dlerror());
+        luaX_push(L, luaX_nil, dlerror());
       }
     }
   }
@@ -101,13 +115,12 @@ namespace dromozoa {
       luaL_newmetatable(L, "dromozoa.dyld.handle");
       lua_pushvalue(L, -2);
       luaX_set_field(L, -2, "__index");
+      luaX_set_field(L, -1, "__gc", impl_gc);
       lua_pop(L, 1);
 
       luaX_set_field(L, -1, "dlclose", impl_dlclose);
       luaX_set_field(L, -1, "dlsym", impl_dlsym);
       luaX_set_field(L, -1, "get", impl_get);
-      luaX_set_field(L, -1, "is_default", impl_is_default);
-      luaX_set_field(L, -1, "is_next", impl_is_next);
     }
     luaX_set_field(L, -2, "handle");
 
@@ -118,9 +131,9 @@ namespace dromozoa {
     luaX_set_field(L, -1, "RTLD_GLOBAL", RTLD_GLOBAL);
     luaX_set_field(L, -1, "RTLD_LOCAL", RTLD_LOCAL);
 
-    new_handle(L, RTLD_DEFAULT);
+    new_handle_ref(L, RTLD_DEFAULT);
     luaX_set_field(L, -2, "RTLD_DEFAULT");
-    new_handle(L, RTLD_NEXT);
+    new_handle_ref(L, RTLD_NEXT);
     luaX_set_field(L, -2, "RTLD_NEXT");
   }
 }
