@@ -15,7 +15,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with dromozoa-dyld.  If not, see <http://www.gnu.org/licenses/>.
 
-local uint32 = require "dromozoa.commons.uint32"
 local dyld = require "dromozoa.dyld"
 
 assert(dyld.RTLD_LAZY)
@@ -44,7 +43,7 @@ end
 if symbol and not symbol:is_null() then
   print("dlsym(pthread_create)", symbol:get())
 else
-  local handle = assert(dyld.dlopen("libpthread.so.0", uint32.bor(dyld.RTLD_LAZY, dyld.RTLD_GLOBAL)))
+  local handle = assert(dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
   print("dlopen(libpthread.so.0)", handle:get())
   local symbol = assert(dyld.RTLD_DEFAULT:dlsym("pthread_create"))
   print("dlsym(pthread_create)", symbol:get())
