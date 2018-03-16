@@ -17,18 +17,10 @@
 
 local dyld = require "dromozoa.dyld"
 
-local names = {
-  "RTLD_LAZY";
-  "RTLD_NOW";
-  "RTLD_GLOBAL";
-  "RTLD_LOCAL";
-}
-for i = 1, #names do
-  local name = names[i]
-  local value = assert(dyld[name])
-  assert(type(value) == "number")
-end
-
+assert(type(dyld.RTLD_LAZY) == "number")
+assert(type(dyld.RTLD_NOW) == "number")
+assert(type(dyld.RTLD_GLOBAL) == "number")
+assert(type(dyld.RTLD_LOCAL) == "number")
 assert(dyld.RTLD_DEFAULT)
 assert(dyld.RTLD_NEXT)
 
