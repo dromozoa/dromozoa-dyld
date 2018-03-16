@@ -1,4 +1,4 @@
--- Copyright (C) 2016,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 --
 -- This file is part of dromozoa-dyld.
 --
@@ -17,10 +17,8 @@
 
 local dyld = require "dromozoa.dyld"
 
-local handle = dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_LOCAL)
-if not handle then
-  handle = assert(dyld.dlopen("libpthread.dylib", dyld.RTLD_LAZY + dyld.RTLD_LOCAL))
+if dyld.RTLD_DEFAULT:dlsym "gnu_get_libc_version" then
+  print "gnu_get_libc_version found"
+else
+  print "gnu_get_libc_version not found"
 end
-print(handle:get())
-assert(handle:dlclose())
-print(handle:get())

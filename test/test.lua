@@ -1,4 +1,4 @@
--- Copyright (C) 2016 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2016,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 --
 -- This file is part of dromozoa-dyld.
 --
@@ -15,29 +15,19 @@
 -- You should have received a copy of the GNU General Public License
 -- along with dromozoa-dyld.  If not, see <http://www.gnu.org/licenses/>.
 
-local uint32 = require "dromozoa.commons.uint32"
 local dyld = require "dromozoa.dyld"
 
-assert(dyld.RTLD_LAZY)
-assert(dyld.RTLD_NOW)
-assert(dyld.RTLD_GLOBAL)
-assert(dyld.RTLD_LOCAL)
+assert(type(dyld.RTLD_LAZY) == "number")
+assert(type(dyld.RTLD_NOW) == "number")
+assert(type(dyld.RTLD_GLOBAL) == "number")
+assert(type(dyld.RTLD_LOCAL) == "number")
+assert(dyld.RTLD_DEFAULT)
+assert(dyld.RTLD_NEXT)
 
-local symbol, message = dyld.RTLD_DEFAULT:dlsym("pthread_create")
-if symbol and not symbol:is_null() then
-  print("dlsym(pthread_create)", symbol:get())
+if dyld.RTLD_DEFAULT:dlsym "pthread_create" then
+  print "pthread_create found"
 else
-  local handle = assert(dyld.dlopen("libpthread.so.0", uint32.bor(dyld.RTLD_LAZY, dyld.RTLD_GLOBAL)))
-  print("dlopen(libpthread.so.0)", handle:get())
-  local symbol = assert(dyld.RTLD_DEFAULT:dlsym("pthread_create"))
-  print("dlsym(pthread_create)", symbol:get())
+  print "pthread_create not found"
+  assert(dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
+  assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
 end
-
-local symbol, message = assert(dyld.RTLD_DEFAULT:dlsym("puts"))
-assert(symbol:is_null() == false)
-
-assert(dyld.RTLD_DEFAULT:is_default() == true)
-assert(dyld.RTLD_DEFAULT:is_next() == false)
-
-assert(dyld.RTLD_NEXT:is_default() == false)
-assert(dyld.RTLD_NEXT:is_next() == true)

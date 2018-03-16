@@ -1,4 +1,4 @@
--- Copyright (C) 2016,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 --
 -- This file is part of dromozoa-dyld.
 --
@@ -17,10 +17,22 @@
 
 local dyld = require "dromozoa.dyld"
 
-local handle = dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_LOCAL)
-if not handle then
-  handle = assert(dyld.dlopen("libpthread.dylib", dyld.RTLD_LAZY + dyld.RTLD_LOCAL))
+local is_glibc = dyld.RTLD_DEFAULT:dlsym "gnu_get_libc_version"
+
+assert(dyld.dlopen_pthread())
+assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
+local pthread_handle = debug.getregistry()["dromozoa.dyld.pthread"]
+if is_glibc then
+  assert(pthread_handle ~= nil)
+else
+  assert(pthread_handle == nil)
 end
-print(handle:get())
-assert(handle:dlclose())
-print(handle:get())
+
+assert(dyld.dlopen_pthread())
+assert(debug.getregistry()["dromozoa.dyld.pthread"] == pthread_handle)
+
+assert(dyld.dlclose_pthread())
+assert(debug.getregistry()["dromozoa.dyld.pthread"] == nil)
+
+assert(dyld.dlclose_pthread())
+assert(debug.getregistry()["dromozoa.dyld.pthread"] == nil)
