@@ -79,7 +79,7 @@ namespace dromozoa {
       const char* name = luaL_checkstring(L, 2);
       // clear error
       dlerror();
-      if (void* result = ::dlsym(check_handle(L, 1)->get(), name)) {
+      if (void* result = dlsym(check_handle(L, 1)->get(), name)) {
         new_symbol(L, result);
       } else {
         luaX_push(L, luaX_nil);
@@ -102,8 +102,24 @@ namespace dromozoa {
         luaX_push(L, luaX_nil, dlerror());
       }
     }
-  }
 
+    void impl_dlopen_pthread(lua_State* L) {
+      const char* file = luaL_optstring(L, 1, "libpthread.so.0");
+
+      if (dlsym(RTLD_DEFAULT, "pthread_create")) {
+        luaX_push_success(L);
+      } else {
+        if (void* result = dlopen(file, RTLD_LAZY | RTLD_GLOBAL)) {
+          new_handle(L, result);
+          luaX_set_field(L, LUA_REGISTRYINDEX, "dromozoa.dyld.pthread");
+          luaX_push_success(L);
+        } else {
+          luaX_push(L, luaX_nil, dlerror());
+        }
+      }
+    }
+  }
+,
   void initialize_handle(lua_State* L) {
     lua_newtable(L);
     {
@@ -125,6 +141,7 @@ namespace dromozoa {
     luaX_set_field(L, -2, "handle");
 
     luaX_set_field(L, -1, "dlopen", impl_dlopen);
+    luaX_set_field(L, -1, "dlopen_pthread", impl_dlopen_pthread);
 
     luaX_set_field(L, -1, "RTLD_LAZY", RTLD_LAZY);
     luaX_set_field(L, -1, "RTLD_NOW", RTLD_NOW);
