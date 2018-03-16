@@ -17,9 +17,8 @@
 
 local dyld = require "dromozoa.dyld"
 
-local symbol, message = dyld.RTLD_DEFAULT:dlsym("gnu_get_libc_version")
-if symbol then
-  print("gnu_get_libc_version", symbol:get())
+if dyld.RTLD_DEFAULT:dlsym "gnu_get_libc_version" then
+  print "gnu_get_libc_version found"
 else
-  print("gnu_get_libc_version not found", message)
+  print "gnu_get_libc_version not found"
 end
