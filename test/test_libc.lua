@@ -17,13 +17,9 @@
 
 local dyld = require "dromozoa.dyld"
 
-assert(dyld.dlopen_pthread())
-assert(dyld.dlclose_pthread())
-assert(debug.getregistry()["dromozoa.dyld.pthread"] == nil)
-
-assert(dyld.dlopen_pthread())
-assert(dyld.dlopen_pthread())
-assert(dyld.dlclose_pthread())
-assert(debug.getregistry()["dromozoa.dyld.pthread"] == nil)
-assert(dyld.dlclose_pthread())
-assert(debug.getregistry()["dromozoa.dyld.pthread"] == nil)
+local symbol, message = dyld.RTLD_DEFAULT:dlsym("gnu_get_libc_version")
+if symbol then
+  print("gnu_get_libc_version", symbol:get())
+else
+  print("gnu_get_libc_version not found", message)
+end
