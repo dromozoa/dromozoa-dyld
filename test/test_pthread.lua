@@ -17,6 +17,8 @@
 
 local dyld = require "dromozoa.dyld"
 
+local is_glibc
+
 assert(dyld.dlopen_pthread())
 assert(dyld.dlclose_pthread())
 assert(debug.getregistry()["dromozoa.dyld.pthread"] == nil)

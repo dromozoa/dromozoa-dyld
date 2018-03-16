@@ -17,9 +17,10 @@
 
 local dyld = require "dromozoa.dyld"
 
-local handle, message = dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_LOCAL)
+local handle = dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_LOCAL)
 if not handle then
-  handle, message = dyld.dlopen("libpthread.dylib", dyld.RTLD_LAZY + dyld.RTLD_LOCAL)
+  handle = assert(dyld.dlopen("libpthread.dylib", dyld.RTLD_LAZY + dyld.RTLD_LOCAL))
 end
-print(handle, message)
+print(handle:get())
 assert(handle:dlclose())
+print(handle:get())

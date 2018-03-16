@@ -27,17 +27,15 @@ for i = 1, #names do
   local name = names[i]
   local value = assert(dyld[name])
   assert(type(value) == "number")
-  print(name, dyld[name])
 end
 
-local symbol, message = dyld.RTLD_DEFAULT:dlsym("pthread_create")
-if not symbol then
-  print(message)
-  local handle = assert(dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
-  print("dlopen(libpthread.so.0)", handle:get())
-  local symbol = assert(dyld.RTLD_DEFAULT:dlsym("pthread_create"))
-  print("dlsym(pthread_create)", symbol:get())
-end
+assert(dyld.RTLD_DEFAULT)
+assert(dyld.RTLD_NEXT)
 
-local symbol, message = assert(dyld.RTLD_DEFAULT:dlsym("puts"))
-print(symbol:get())
+if dyld.RTLD_DEFAULT:dlsym "pthread_create" then
+  print "pthread_create found"
+else
+  print "pthread_create not found"
+  assert(dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
+  assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
+end
