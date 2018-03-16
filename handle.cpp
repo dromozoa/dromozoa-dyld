@@ -119,7 +119,7 @@ namespace dromozoa {
       }
     }
   }
-,
+
   void initialize_handle(lua_State* L) {
     lua_newtable(L);
     {
