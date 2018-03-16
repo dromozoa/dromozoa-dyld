@@ -19,3 +19,5 @@ local dyld = require "dromozoa.dyld"
 
 assert(dyld.dlopen_pthread())
 print(debug.getregistry()["dromozoa.dyld.pthread"])
+assert(dyld.dlclose_pthread())
+print(debug.getregistry()["dromozoa.dyld.pthread"])

@@ -63,6 +63,13 @@ namespace dromozoa {
       return luaX_check_udata<handle>(L, arg, "dromozoa.dyld.handle_ref", "dromozoa.dyld.handle");
     }
 
+    void push_error(lua_State* L) {
+      luaX_push(L, luaX_nil);
+      if (const char* message = dlerror()) {
+        luaX_push(L, message);
+      }
+    }
+
     void impl_gc(lua_State* L) {
       check_handle(L, 1)->~handle();
     }
@@ -71,7 +78,7 @@ namespace dromozoa {
       if (check_handle(L, 1)->dlclose() == 0) {
         luaX_push_success(L);
       } else {
-        luaX_push(L, luaX_nil, dlerror());
+        push_error(L);
       }
     }
 
@@ -82,10 +89,8 @@ namespace dromozoa {
       if (void* result = dlsym(check_handle(L, 1)->get(), name)) {
         new_symbol(L, result);
       } else {
-        luaX_push(L, luaX_nil);
-        if (const char* message = dlerror()) {
-          luaX_push(L, message);
-        }
+        // return nil without error message if handle is NULL
+        push_error(L);
       }
     }
 
@@ -99,13 +104,12 @@ namespace dromozoa {
       if (void* result = dlopen(file, mode)) {
         new_handle(L, result);
       } else {
-        luaX_push(L, luaX_nil, dlerror());
+        push_error(L);
       }
     }
 
     void impl_dlopen_pthread(lua_State* L) {
       const char* file = luaL_optstring(L, 1, "libpthread.so.0");
-
       if (dlsym(RTLD_DEFAULT, "pthread_create")) {
         luaX_push_success(L);
       } else {
@@ -114,8 +118,23 @@ namespace dromozoa {
           luaX_set_field(L, LUA_REGISTRYINDEX, "dromozoa.dyld.pthread");
           luaX_push_success(L);
         } else {
-          luaX_push(L, luaX_nil, dlerror());
+          push_error(L);
         }
+      }
+    }
+
+    void impl_dlclose_pthread(lua_State* L) {
+      int result = 0;
+      luaX_get_field(L, LUA_REGISTRYINDEX, "dromozoa.dyld.pthread");
+      if (handle* self = luaX_to_udata<handle>(L, -1, "dromozoa.dyld.handle")) {
+        result = self->dlclose();
+      }
+      lua_pop(L, 1);
+      luaX_set_field(L, LUA_REGISTRYINDEX, "dromozoa.dyld.pthread", luaX_nil);
+      if (result == 0) {
+        luaX_push_success(L);
+      } else {
+        push_error(L);
       }
     }
   }
@@ -142,6 +161,7 @@ namespace dromozoa {
 
     luaX_set_field(L, -1, "dlopen", impl_dlopen);
     luaX_set_field(L, -1, "dlopen_pthread", impl_dlopen_pthread);
+    luaX_set_field(L, -1, "dlclose_pthread", impl_dlclose_pthread);
 
     luaX_set_field(L, -1, "RTLD_LAZY", RTLD_LAZY);
     luaX_set_field(L, -1, "RTLD_NOW", RTLD_NOW);
