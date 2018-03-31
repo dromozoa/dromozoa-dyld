@@ -1,6 +1,6 @@
 #! /bin/sh -e
 
-# Copyright (C) 2015,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
+# Copyright (C) 2016,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 #
 # This file is part of dromozoa-socks.
 #
@@ -22,10 +22,10 @@ case x$1 in
   *) lua=$1;;
 esac
 
-LUA_PATH="?.lua;;"
-export LUA_PATH
-
 for i in test/test*.lua
 do
-  "$lua" "$i"
+  case X$# in
+    X0) lua "$i";;
+    *) "$@" "$i";;
+  esac
 done
