@@ -28,6 +28,9 @@ TARGET = dyld.so
 
 all: $(TARGET)
 
+check:
+	./test.sh
+
 clean:
 	rm -f *.o $(TARGET)
 
