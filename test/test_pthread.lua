@@ -18,21 +18,23 @@
 local dyld = require "dromozoa.dyld"
 
 local is_glibc = dyld.RTLD_DEFAULT:dlsym "gnu_get_libc_version"
+local registry = debug.getregistry()
 
 assert(dyld.dlopen_pthread())
 assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
-local pthread_handle = debug.getregistry()["dromozoa.dyld.pthread"]
+local pthread_handle = registry["dromozoa.dyld.pthread"]
+print(pthread_handle)
 if is_glibc then
-  assert(pthread_handle ~= nil)
+  assert(type(pthread_handle) == "userdata")
 else
-  assert(pthread_handle == nil)
+  assert(pthread_handle == true)
 end
 
 assert(dyld.dlopen_pthread())
-assert(debug.getregistry()["dromozoa.dyld.pthread"] == pthread_handle)
+assert(registry["dromozoa.dyld.pthread"] == pthread_handle)
 
 assert(dyld.dlclose_pthread())
-assert(debug.getregistry()["dromozoa.dyld.pthread"] == nil)
+assert(registry["dromozoa.dyld.pthread"] == nil)
 
 assert(dyld.dlclose_pthread())
-assert(debug.getregistry()["dromozoa.dyld.pthread"] == nil)
+assert(registry["dromozoa.dyld.pthread"] == nil)
