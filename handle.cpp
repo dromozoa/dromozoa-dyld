@@ -109,17 +109,24 @@ namespace dromozoa {
     }
 
     void impl_dlopen_pthread(lua_State* L) {
-      const char* file = luaL_optstring(L, 1, "libpthread.so.0");
-      if (dlsym(RTLD_DEFAULT, "pthread_create")) {
-        luaX_push_success(L);
-      } else {
-        if (void* result = dlopen(file, RTLD_LAZY | RTLD_GLOBAL)) {
-          new_handle(L, result);
-          luaX_set_field(L, LUA_REGISTRYINDEX, "dromozoa.dyld.pthread");
-          luaX_push_success(L);
+      luaX_get_field(L, LUA_REGISTRYINDEX, "dromozoa.dyld.pthread");
+      bool is_nil = lua_isnil(L, -1);
+      lua_pop(L, 1);
+      if (is_nil) {
+        if (dlsym(RTLD_DEFAULT, "gnu_get_libc_version")) {
+          if (void* result = dlopen("libpthread.so.0", RTLD_LAZY | RTLD_GLOBAL)) {
+            new_handle(L, result);
+            luaX_set_field(L, LUA_REGISTRYINDEX, "dromozoa.dyld.pthread");
+            luaX_push_success(L);
+          } else {
+            push_error(L);
+          }
         } else {
-          push_error(L);
+          luaX_set_field(L, LUA_REGISTRYINDEX, "dromozoa.dyld.pthread", true);
+          luaX_push_success(L);
         }
+      } else {
+        luaX_push_success(L);
       }
     }
 

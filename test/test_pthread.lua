@@ -25,9 +25,9 @@ assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
 local pthread_handle = registry["dromozoa.dyld.pthread"]
 print(pthread_handle)
 if is_glibc then
-  assert(pthread_handle ~= nil)
+  assert(type(pthread_handle) == "userdata")
 else
-  assert(pthread_handle == nil)
+  assert(pthread_handle == true)
 end
 
 assert(dyld.dlopen_pthread())
