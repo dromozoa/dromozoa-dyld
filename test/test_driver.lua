@@ -17,24 +17,12 @@
 
 local dyld = require "dromozoa.dyld"
 
-local is_glibc = dyld.RTLD_DEFAULT:dlsym "gnu_get_libc_version"
-local registry = debug.getregistry()
-
 assert(dyld.dlopen_pthread())
-assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
-local pthread_handle = registry["dromozoa.dyld.pthread"]
-print(pthread_handle)
-if is_glibc then
-  assert(type(pthread_handle) == "userdata")
-else
-  assert(pthread_handle == true)
+
+local count = 0
+print(count, assert(dyld.RTLD_DEFAULT:dlsym "pthread_create"):get())
+
+return function ()
+  count = count + 1
+  print(count, assert(dyld.RTLD_DEFAULT:dlsym "pthread_create"):get())
 end
-
-assert(dyld.dlopen_pthread())
-assert(registry["dromozoa.dyld.pthread"] == pthread_handle)
-
-assert(dyld.dlclose_pthread())
-assert(registry["dromozoa.dyld.pthread"] == nil)
-
-assert(dyld.dlclose_pthread())
-assert(registry["dromozoa.dyld.pthread"] == nil)

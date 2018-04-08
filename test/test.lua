@@ -28,6 +28,7 @@ if dyld.RTLD_DEFAULT:dlsym "pthread_create" then
   print "pthread_create found"
 else
   print "pthread_create not found"
-  assert(dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
+  local handle = assert(dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
   assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
+  assert(handle:dlsym "pthread_create")
 end
