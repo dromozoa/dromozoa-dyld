@@ -17,6 +17,8 @@
 
 local dyld = require "dromozoa.dyld"
 
+local verbose = os.getenv "VERBOSE" == "1"
+
 assert(type(dyld.RTLD_LAZY) == "number")
 assert(type(dyld.RTLD_NOW) == "number")
 assert(type(dyld.RTLD_GLOBAL) == "number")
@@ -25,9 +27,13 @@ assert(dyld.RTLD_DEFAULT)
 assert(dyld.RTLD_NEXT)
 
 if dyld.RTLD_DEFAULT:dlsym "pthread_create" then
-  print "pthread_create found"
+  if verbose then
+    io.stderr:write "pthread_create found\n"
+  end
 else
-  print "pthread_create not found"
+  if verbose then
+    io.stderr:write "pthread_create not found\n"
+  end
   local handle = assert(dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_GLOBAL))
   assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
   assert(handle:dlsym "pthread_create")

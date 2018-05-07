@@ -17,8 +17,14 @@
 
 local dyld = require "dromozoa.dyld"
 
+local verbose = os.getenv "VERBOSE" == "1"
+
 if dyld.RTLD_DEFAULT:dlsym "gnu_get_libc_version" then
-  print "gnu_get_libc_version found"
+  if verbose then
+    io.stderr:write "gnu_get_libc_version found\n"
+  end
 else
-  print "gnu_get_libc_version not found"
+  if verbose then
+    io.stderr:write "gnu_get_libc_version not found\n"
+  end
 end

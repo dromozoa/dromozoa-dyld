@@ -17,13 +17,17 @@
 
 local dyld = require "dromozoa.dyld"
 
+local verbose = os.getenv "VERBOSE" == "1"
+
 local is_glibc = dyld.RTLD_DEFAULT:dlsym "gnu_get_libc_version"
 local registry = debug.getregistry()
 
 assert(dyld.dlopen_pthread())
 assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
 local pthread_handle = registry["dromozoa.dyld.pthread"]
-print(pthread_handle)
+if verbose then
+  io.stderr:write(tostring(pthread_handle), "\n")
+end
 if is_glibc then
   assert(type(pthread_handle) == "userdata")
 else

@@ -17,29 +17,4 @@
 
 local bind = require "dromozoa.bind"
 
-local verbose = os.getenv "VERBOSE" == "1"
-
-if verbose then
-  print(select("#", ...))
-  for k, v in pairs(arg) do
-    print(k, v)
-  end
-end
-
-local bind_count = bind.handle(bind.count)
-local hook_count = 0
-
-if verbose then
-  print("bind", bind_count, bind_count:get(), hook_count)
-end
-
-bind = nil
-collectgarbage()
-collectgarbage()
-
-return function ()
-  hook_count = hook_count + 1
-  if verbose then
-    print("hook", bind_count, bind_count:get(), hook_count)
-  end
-end
+assert(bind.scoped_ptr.test())
