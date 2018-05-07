@@ -17,12 +17,21 @@
 
 local dyld = require "dromozoa.dyld"
 
+local verbose = os.getenv "VERBOSE" == "1"
+
 assert(dyld.dlopen_pthread())
 
 local count = 0
-print(count, assert(dyld.RTLD_DEFAULT:dlsym "pthread_create"):get())
+local symbol = assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
+if verbose then
+  io.stderr:write(count, " ", tostring(symbol:get()), "\n")
+end
 
 return function ()
   count = count + 1
-  print(count, assert(dyld.RTLD_DEFAULT:dlsym "pthread_create"):get())
+  local symbol = assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
+  local symbol = assert(dyld.RTLD_DEFAULT:dlsym "pthread_create")
+  if verbose then
+    io.stderr:write(count, " ", tostring(symbol:get()), "\n")
+  end
 end
