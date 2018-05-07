@@ -17,10 +17,17 @@
 
 local dyld = require "dromozoa.dyld"
 
+local verbose = os.getenv "VERBOSE" == "1"
+
 local handle = dyld.dlopen("libpthread.so.0", dyld.RTLD_LAZY + dyld.RTLD_LOCAL)
 if not handle then
   handle = assert(dyld.dlopen("libpthread.dylib", dyld.RTLD_LAZY + dyld.RTLD_LOCAL))
 end
-print(handle:get())
+
+if verbose then
+  io.stderr:write(tostring(handle:get()), "\n")
+end
 assert(handle:dlclose())
-print(handle:get())
+if verbose then
+  io.stderr:write(tostring(handle:get()), "\n")
+end
