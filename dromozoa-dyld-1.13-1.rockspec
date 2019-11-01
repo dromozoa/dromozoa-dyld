@@ -1,8 +1,8 @@
 package = "dromozoa-dyld"
-version = "1.12-1"
+version = "1.13-1"
 source = {
-  url = "https://github.com/dromozoa/dromozoa-dyld/archive/v1.12.tar.gz";
-  file = "dromozoa-dyld-1.12.tar.gz";
+  url = "https://github.com/dromozoa/dromozoa-dyld/archive/v1.13.tar.gz";
+  file = "dromozoa-dyld-1.13.tar.gz";
 }
 description = {
   summary = "Dynamic linker utility";
@@ -16,7 +16,6 @@ build = {
     CFLAGS = "$(CFLAGS)";
     LIBFLAG = "$(LIBFLAG)";
     LUA_INCDIR = "$(LUA_INCDIR)";
-    LUA_LIBDIR = "$(LUA_LIBDIR)";
   };
   install_variables = {
     LIBDIR = "$(LIBDIR)";
