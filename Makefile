@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2018 Tomoyuki Fujimori <moyu@dromozoa.com>
+# Copyright (C) 2016-2019 Tomoyuki Fujimori <moyu@dromozoa.com>
 #
 # This file is part of dromozoa-dyld.
 #
@@ -17,7 +17,6 @@
 
 CPPFLAGS += -Ibind -I$(LUA_INCDIR)
 CXXFLAGS += -Wall -W $(CFLAGS)
-LDFLAGS += -L$(LUA_LIBDIR) $(LIBFLAG)
 LDLIBS += -ldl
 
 OBJS = \
@@ -35,7 +34,7 @@ clean:
 	rm -f *.o $(TARGET)
 
 dyld.so: $(OBJS)
-	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	$(CXX) $(LDFLAGS) $(LIBFLAG) $^ $(LDLIBS) -o $@
 
 .cpp.o:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
