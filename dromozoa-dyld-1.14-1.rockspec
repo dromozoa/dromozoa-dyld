@@ -1,8 +1,8 @@
 package = "dromozoa-dyld"
-version = "1.13-1"
+version = "1.14-1"
 source = {
-  url = "https://github.com/dromozoa/dromozoa-dyld/archive/v1.13.tar.gz";
-  file = "dromozoa-dyld-1.13.tar.gz";
+  url = "https://github.com/dromozoa/dromozoa-dyld/archive/v1.14.tar.gz";
+  file = "dromozoa-dyld-1.14.tar.gz";
 }
 description = {
   summary = "Dynamic linker utility";
